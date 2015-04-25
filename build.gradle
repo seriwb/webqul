@@ -1,0 +1,46 @@
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply from: 'http://repository-javafx-gradle-plugin.forge.cloudbees.com/snapshot/javafx.plugin'
+
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+version = '1.0'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile ('org.codehaus.groovy:groovy-all:2.4.3') {transitive = false}
+	compile ('org.codehaus.groovyfx:groovyfx:0.4.0') {transitive = false}
+	compile ('org.apache.logging.log4j:log4j-core:2.0.1') {transitive = false}
+	compile ('org.apache.logging.log4j:log4j-api:2.0.1') {transitive = false}
+	compile ('org.apache.logging.log4j:log4j-slf4j-impl:2.0.1') {transitive = false}
+	compile ('org.slf4j:slf4j-api:1.7.7') {transitive = false}
+//	compile ('com.fasterxml.jackson.core:jackson-core:[2.4,)') {transitive = false}
+//	compile ('com.fasterxml.jackson.core:jackson-databind:[2.4,)') {transitive = false}
+//	compile ('com.fasterxml.jackson.core:jackson-annotations:[2.4,)') {transitive = false}
+	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+}
+
+def defaultEncoding = 'UTF-8'
+tasks.withType(AbstractCompile) each { it.options.encoding = defaultEncoding }
+tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = defaultEncoding }
+
+task copyTask(type: Copy) {
+    from 'src/resources'
+    into 'build/classes'
+}
+
+// fat jar用の設定
+jar {
+	copyTask {}
+	from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	manifest {
+		attributes (
+			'Implementation-Title': 'webqul',
+			'Implementation-Version': version,
+			'Main-Class' : 'white.box.webqul.application.Main'
+		)
+	}
+}
