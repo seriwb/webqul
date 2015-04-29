@@ -8,7 +8,7 @@ import groovy.util.logging.Slf4j
  * @author seri
  */
 @Slf4j
-class Bootstrap {
+class BootStrap {
 	
 	/**
 	 * アプリケーションの初期化処理。<br>
@@ -21,10 +21,20 @@ class Bootstrap {
 	 * <li>カラム名辞書を取り込むと対応するカラムの日本語を表示する（Excelファイル）。
 	 * 存在しない場合は表示しない。</li>
 	 * </ul>
+	 * configディレクトリ配下のjdbc.propertiesを読み込む。<br>
+	 * 当該ファイル、または必要な情報が存在しなければIllegalArgumentExceptionを発生させる。<br>
 	 * 
 	 * @return
 	 */
-	def init() {
+	def init = { config ->
+		config = new ConfigSlurper().parse(
+				new File('./conf/Config.groovy').getText("UTF-8"))
+	}
+	
+	/**
+	 * JDBC設定の読み込みを行う。<br>
+	 */
+	void loadJdbc() {
 		
 	}
 }
